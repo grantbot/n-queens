@@ -19,6 +19,7 @@
     },
 
     rows: function() {
+    //Returns a nested array (matrix) representing the current board state
       return _(_.range(this.get('n'))).map(function(rowIndex) {
         return this.get(rowIndex);
       }, this);
@@ -79,12 +80,23 @@
     //
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
-      return false; // fixme
+      var row = this.get(rowIndex);
+      return row.reduce(function(total, curr) {return total + curr}) > 1 ? true : false;
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
-      return false; // fixme
+      var board_size = this.attributes.n;
+
+      //Loop through rows and check each row for conflict
+      for (var i = 0; i < board_size; i ++) {
+        if (this.hasRowConflictAt(i)) {
+          return true;
+        }
+      }
+      
+      //We didn't find one, so return false
+      return false;
     },
 
 
