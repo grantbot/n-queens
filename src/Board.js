@@ -86,7 +86,6 @@
         //  adding prev to current
       return row.reduce(function(total, current){ return total + current; }) > 1 ? true : false;
       // ternary operator
->>>>>>> pair
     },
 
     // test if any rows on this board contain conflicts
@@ -99,7 +98,6 @@
         }
       }
       return false; // fixme
->>>>>>> pair
     },
 
 
