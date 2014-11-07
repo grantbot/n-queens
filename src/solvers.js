@@ -76,7 +76,6 @@ window.countNRooksSolutions = function(n) {
 };
 
 
-
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
   var board = new Board({n: n});
@@ -169,4 +168,39 @@ window.countNQueensSolutions = function(n) {
   findSolution([]);
 
   return solutionCount;
+};
+
+window.bitNQueens = function(n) {
+  var solution_count = 0;
+  var limit = (1<<n) - 1;
+
+  var findSolutions = function (colThreat, majDiagThreat, minDiagThreat) {
+    var attackedCells = colThreat | majDiagThreat | minDiagThreat;
+    var openCells = ~(attackedCells) & limit;
+
+    if (colThreat === limit) {
+      solution_count ++;
+    }
+
+    while (openCells > 0) {
+      //Extract right-most bit
+      var rightMostLegalMove = openCells & (-openCells);
+
+      //Take that bit off of openCells
+      openCells = openCells & (openCells - 1);
+
+      //Use that legal move to update attacks
+      var newColThreat = (colThreat | rightMostLegalMove);
+      var newMajDiagThreat = ((majDiagThreat | rightMostLegalMove) << 1);
+      var newMinDiagThreat = ((minDiagThreat | rightMostLegalMove) >> 1);
+
+      findSolutions(newColThreat, newMajDiagThreat, newMinDiagThreat);
+    }
+
+
+  }
+
+  findSolutions(0,0,0);
+  return solution_count;
+
 };
