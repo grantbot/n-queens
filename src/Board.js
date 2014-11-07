@@ -19,6 +19,7 @@
     },
 
     rows: function() {
+    //Returns a nested array (matrix) representing the current board state
       return _(_.range(this.get('n'))).map(function(rowIndex) {
         return this.get(rowIndex);
       }, this);
