@@ -171,17 +171,30 @@ window.countNQueensSolutions = function(n) {
 };
 
 window.bitNQueens = function(n) {
+  //Start from the bottom row, places a queen, and uses bitstrings to represent
+  //all the attacked squares on the above row to narrow down legal moves, places another
+  //queen, and so forth until it places n queens at which point it counts that solution.
   var solution_count = 0;
+  //Same as doing limit = Math.pow(2,n) - 1. Represents a bit string of length
+  //n with all 1's
   var limit = (1<<n) - 1;
 
   var findSolutions = function (colThreat, majDiagThreat, minDiagThreat) {
+    //refer to http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.51.7113&rep=rep1&type=pdf
+    //DiagThreats represent cells on a row that are attacked from maj and min diags. Colthreat
+    //represents cells attacked from columns (below), or columns that already contain queens.
+    //
+    //Combine attacked cells together per row into one bitstring
     var attackedCells = colThreat | majDiagThreat | minDiagThreat;
+    //Invert it to find all legal moves in the row
     var openCells = ~(attackedCells) & limit;
 
+    //If we have as many queens as the limit (just represented in bitstrings), iterate count
     if (colThreat === limit) {
       solution_count ++;
     }
 
+    //Otherwise, as long as we still have legal moves in this row...
     while (openCells > 0) {
       //Extract right-most bit
       var rightMostLegalMove = openCells & (-openCells);
@@ -189,17 +202,21 @@ window.bitNQueens = function(n) {
       //Take that bit off of openCells
       openCells = openCells & (openCells - 1);
 
-      //Use that legal move to update attacks
+      //Use that legal move to update attacked cells
+      //Note we had to declare new variables here; modifying the old ones
+      //as new versions of themselves didn't work for some reason.
       var newColThreat = (colThreat | rightMostLegalMove);
       var newMajDiagThreat = ((majDiagThreat | rightMostLegalMove) << 1);
       var newMinDiagThreat = ((minDiagThreat | rightMostLegalMove) >> 1);
 
+      //And pass that new info to the recursive call
       findSolutions(newColThreat, newMajDiagThreat, newMinDiagThreat);
     }
 
 
   }
 
+  //Call it with 0 queens and no threatened squares.
   findSolutions(0,0,0);
   return solution_count;
 
